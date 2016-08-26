@@ -3,15 +3,18 @@ from objects import *
 
 """THIS is building empty world which needs to be over written when reading files"""
 
-
-#size = (1920,1080)
-
-
-
 platform = []
 
-for y in range(9):
-    for x in range(64):
+for x in range(64):
+    """builds in collums! ignore gobbly goop 
+    12
+    34
+    56
+    78    
+    
+    need to make interpreter to turn platform into list of lists of chars that will be used for writing
+    """
+    for y in range(9):
         
         temp = pygame.sprite.Group([
             MicroBlock(((4+x*60+100,4+y*60))),
@@ -21,6 +24,7 @@ for y in range(9):
         ])
         
         platform.append(temp)
+        map_length = x + 1
 
-map_length = 64
+
     
