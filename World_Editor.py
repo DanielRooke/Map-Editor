@@ -27,8 +27,6 @@ saveButton = Button("save.png", (2, 0))
 homeGroup = pygame.sprite.Group(newButton, openButton)
 editorGroup = pygame.sprite.Group(newButton, openButton, saveButton)
 
-def save_file(save):
-    writer.write_file(file)
 
 def end_task():
     '''set quit values to exit program'''
@@ -87,7 +85,7 @@ if __name__ == '__main__':
         
         
         
-        
+        '''EDITOR'''
         while state == 'editor':
             for event in pygame.event.get():
                 
@@ -97,19 +95,35 @@ if __name__ == '__main__':
                 elif event.type == MOUSEBUTTONDOWN:  #Mouse click
                     
                     if event.button == 1:#left click
+                        
                         #check mouse collision with buttons in homeGroup
+                        
+                        #NEW FILE BUTTON
                         if newButton.rect.collidepoint(event.pos):
                             #clear current file if open and create new map object
                             if not save.is_saved:
-                                writer.write_file(filePath)
+                                filePath = filesavebox(filetypes=['\*.txt'])
+                                if filePath != '.':
+                                    writer.write_file(filePath, save)
+                            if save.is_saved:
+                                save = MapSave()
                         
-                        #click collision with open file button
+                        
+                        #OPEN FILE BUTTON
                         elif openButton.rect.collidepoint(event.pos):
-                            #search file directory for a saved txt
-                            filePath = fileopenbox(filetypes=['\*.txt'])
-                            save = reader.read_file(filePath)
+                            if not save.is_saved:
+                                filePath = filesavebox(filetypes=['\*.txt'])
+                                writer.write_file(filePath)
+                            if save.is_saved:
+                                #search file directory for a saved txt
+                                filePath = fileopenbox(filetypes=['\*.txt'])
+                                save = reader.read_file(filePath)
+                                
+                        
+                        #SAVE AS FILE BUTTON
                         elif saveButton.rect.collidepoint(event.pos):
                             filePath = filesavebox(filetypes=['\*.txt'])
+                            writer.write_file(filePath, save)
 
                 elif event.type == pygame.VIDEORESIZE:
                     # V THIS FUCKING LINE SAVED MY LIFE V
