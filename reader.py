@@ -1,6 +1,9 @@
 #File Reader
 from objects import MapSave
 
+"""reader will need to return give a platform and a length || mutate global vairables which i would rather not do
+"""
+
 
 def read_file(path):
     '''read_file(path) -> MapSave()

@@ -68,19 +68,29 @@ class MapSave(object):
     '''Object representing the structure of a map's save file'''
     def __init__(self, path=None):
         #coordinate counting starts from 0
+<<<<<<< HEAD
+        
+        self.lines = ['01:','02:','03:','04:','05:','06:','07:','08:','09:','10:','11:','12:','13:','14:','15:','16:','17:','18:']
+=======
         self.lines = ['01:','02:','03:','04:','05:','06:','07:','08:','09:',
                       '10:','11:','12:','13:','14:','15:','16:','17:','18:']
+>>>>>>> refs/remotes/origin/master
         self.path = path
         
         # format is ((x1, y1), (x2, y2)) relative to blocks | x and y values are block counts NOT pixel counts
         # where the first sub tuple is where the block appears on the map
         #and the second is where it will move to
+        
         self.movingTiles = []
     
     def __str__(self):
         '''MapSave.__str__() <==> str(MapSave) -> str
         return the string version of the MapSave object'''
         out = 'APPLICATION MAP\n'
+<<<<<<< HEAD
+        
+=======
+>>>>>>> refs/remotes/origin/master
         for line in self.lines:
             out += '{}\n'.format(line)
         for tile in self.movingTiles:
@@ -88,7 +98,11 @@ class MapSave(object):
         return out
     
     def add_block(self, line, key):
+<<<<<<< HEAD
+        self.lines[line] += key
+=======
         self.lines[line] += key
     
     def set_saved(self, state):
         self.is_saved = state
+>>>>>>> refs/remotes/origin/master
