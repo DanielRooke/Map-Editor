@@ -103,7 +103,7 @@ if __name__ == '__main__':
                             #clear current file if open and create new map object
                             if not save.is_saved:
                                 filePath = filesavebox(filetypes=['\*.txt'])
-                                if filePath != '.':
+                                if filePath != None:
                                     writer.write_file(filePath, save)
                             if save.is_saved:
                                 save = MapSave()
@@ -113,7 +113,8 @@ if __name__ == '__main__':
                         elif openButton.rect.collidepoint(event.pos):
                             if not save.is_saved:
                                 filePath = filesavebox(filetypes=['\*.txt'])
-                                writer.write_file(filePath)
+                                if filePath != '.':
+                                    writer.write_file(filePath)
                             if save.is_saved:
                                 #search file directory for a saved txt
                                 filePath = fileopenbox(filetypes=['\*.txt'])
