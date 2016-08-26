@@ -88,3 +88,6 @@ class MapSave(object):
     
     def add_block(line, key):
         self.lines[line] += key
+    
+    def set_saved(self, state):
+        self.is_saved = state
