@@ -1,4 +1,41 @@
-from new_map_setup import *
+from objects import *
+
+def new_world():
+    platform = []
+    
+    for x in range(64):
+        """builds in collums! ignore gobbly goop 
+        12
+        34
+        56
+        78    
+        
+        need to make interpreter to turn platform into list of lists of chars that will be used for writing
+        """
+        for y in range(9):
+            
+            temp = pygame.sprite.OrderedUpdates([
+                MicroBlock(((x*60+104,4+y*60))), 
+                MicroBlock(((x*60+132,4+y*60))), 
+                MicroBlock(((x*60+104,32+y*60))),
+                MicroBlock(((x*60+132,32+y*60)))
+            ])
+            
+            platform.append(temp)
+            length = x + 1
+    
+    return platform, length
+
+
+#run this if creatinf a new world 
+platform = new_world()
+map_length = platform[1]
+platform = platform[0]
+
+
+
+#or run reader to load platform and length
+
 
 clock = pygame.time.Clock()
 
@@ -26,6 +63,7 @@ buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,0),50),
                                Button("editor_06.bmp",(0,3),50),
                                Button("editor_07.bmp",(1,7),50),
                                Button("editor_08.bmp",(0,7),50),
+                               Button("save.png",(0,9),50)
                                ])
 left_click = 0
 right_click = 0
@@ -118,6 +156,19 @@ while keep_going:
                         map_length -= 2
                         platform = platform[:-18]
                         
+                    elif button.path == "save.png":
+                        
+                        map_list = maptotextlist(platform,map_length)
+                        tobesaved = MapSave()
+                        
+                        for i in range(map_length):
+                            for row in range(18):
+                                tobesaved.add_block(row,map_list[i][row])
+                                
+                        print(tobesaved)
+                        
+                        #file_write(path,tobesaved)
+                        
                    
                 #enables drag to paint macro         
                 left_click = 1
@@ -167,6 +218,7 @@ while keep_going:
                 for sprite in pygame.sprite.spritecollide(user,group,0):
                     sprite.fill(user.set_colour)            
                     sprite.char = user.set_char
+                    
             
                 
     #moves Cursor object                
