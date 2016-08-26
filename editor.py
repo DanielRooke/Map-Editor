@@ -15,9 +15,12 @@ screen = pygame.Surface(size).convert()
 overlay = pygame.Surface((100,1080)).convert()
 overlay.fill((165,165,165))
 
-buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,0)),Button("editor_01.bmp",(0,100)),Button("editor_02.bmp",(0,200))])
+buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,0),50),Button("editor_01.bmp",(1,0),50),Button("editor_02.bmp",(0,1),50),Button("editor_03.bmp",(1,1),50)])
 left_click = 0
 right_click = 0
+
+erase = pygame.Surface((2000,2000)).convert()
+erase.fill(black)
 
 scroll_count = 0
 user = Cursor()
@@ -30,18 +33,9 @@ while keep_going:
     for event in pygame.event.get(): 
         if event.type == QUIT:
             keep_going = False
-            
-        elif event.type == KEYDOWN:
-            
-            if event.key == K_ESCAPE:
-                if window.get_flags() & FULLSCREEN:
-                    pygame.display.set_mode(size,RESIZABLE)
-                else:
-                    pygame.display.set_mode(size, RESIZABLE|FULLSCREEN)   
-                    
                 
         elif event.type == VIDEORESIZE:
-            window = pygame.display.set_mode(event.size,RESIZABLE)
+            window = pygame.display.set_mode(event.size,)
             
             
         elif event.type == MOUSEBUTTONUP:
@@ -114,11 +108,10 @@ while keep_going:
                 
                 
     user.update()
-    
+    window.blit(erase,(0,0))
     for group in platform:
         group.draw(window)
     
-        
     window.blit(overlay,(0,0))    
     buttons.draw(window)
     pygame.display.flip()
