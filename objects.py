@@ -11,7 +11,11 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load(path), (size, size))
         self.rect = self.image.get_rect()
         self.rect.topleft = self.pos
+        
+        #used to compare buttons
         self.path = path
+        
+        
         if command != None:
             self.function = {'command' : command}
     def draw(self, destination):
@@ -19,26 +23,7 @@ class Button(pygame.sprite.Sprite):
     
     def update(self):
         pass
-
-'''
-class Text_Button(pygame.sprite.Sprite):
-"""Text_Button(text, font, colour, pos)
-    Text Object that displays the text centered at tuple pos
-    Sub class of pygame.sprite.Sprite"""
-    def __init__(self, text, font, colour, pos):
-        """Button.__init__(text, font, colour, pos) -> None
-        Initialize the Button object"""
-        pygame.sprite.Sprite.__init__(self)
-        self.image = font.render(text, True, colour)
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
-
-    def draw(self, screen):
-        """Button.draw(screen) -> None
-        blit the Button to screen"""
-        screen.blit(self.image, self.rect.topleft)
-'''
-        
+    
 class Cursor(pygame.sprite.Sprite):
     '''Cursor Object Models Pygame Sprite class to use pygame.sprite.collide with mousepoint'''
     def __init__(self):
@@ -46,6 +31,7 @@ class Cursor(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)
         self.set_colour = (90,127,113) 
+        self.set_char = "W"
         
     def update(self):
         """C.update(self) --> None updates location of rect to mousepoint""" 
@@ -67,6 +53,8 @@ class MicroBlock(pygame.sprite.Sprite):
         
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
+    
+        self.char = " "
         
     def fill(self,col):
         """MB.fill(col_tupple) --> None changes colour of self.image to passed col_tupple"""
