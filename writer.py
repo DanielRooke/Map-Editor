@@ -10,4 +10,3 @@ def write_file(filePath, save):
     file.write(str(save))
     #close txt
     file.close()
-    save.save()

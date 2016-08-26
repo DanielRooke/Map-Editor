@@ -1,8 +1,5 @@
-import pygame
+
 from globalVariables import *
-
-
-'''ANYFILE is a third party program to open other file types in google drive'''
 
 class Button(pygame.sprite.Sprite):
     '''Text_Button(path, pos)
@@ -14,39 +11,41 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load(path), (size, size))
         self.rect = self.image.get_rect()
         self.rect.topleft = self.pos
+        self.path = path
         if command != None:
             self.function = {'command' : command}
     def draw(self, destination):
         destination.blit(self, self.pos)
+    
+    def update(self):
+        pass
 
-
-"""
+'''
 class Text_Button(pygame.sprite.Sprite):
-    '''Text_Button(text, font, colour, pos)
+"""Text_Button(text, font, colour, pos)
     Text Object that displays the text centered at tuple pos
-    Sub class of pygame.sprite.Sprite'''
+    Sub class of pygame.sprite.Sprite"""
     def __init__(self, text, font, colour, pos):
-        '''Button.__init__(text, font, colour, pos) -> None
-        Initialize the Button object'''
+        """Button.__init__(text, font, colour, pos) -> None
+        Initialize the Button object"""
         pygame.sprite.Sprite.__init__(self)
         self.image = font.render(text, True, colour)
         self.rect = self.image.get_rect()
         self.rect.center = pos
 
     def draw(self, screen):
-        '''Button.draw(screen) -> None
-        blit the Button to screen'''
+        """Button.draw(screen) -> None
+        blit the Button to screen"""
         screen.blit(self.image, self.rect.topleft)
-"""
-
-
+'''
+        
 class Cursor(pygame.sprite.Sprite):
     '''Cursor Object Models Pygame Sprite class to use pygame.sprite.collide with mousepoint'''
     def __init__(self):
         """ takes no arguments construct off mouse input"""
         pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)
-        self.set_colour = (0,162,0) 
+        self.set_colour = (90,127,113) 
         
     def update(self):
         """C.update(self) --> None updates location of rect to mousepoint""" 
@@ -55,14 +54,15 @@ class Cursor(pygame.sprite.Sprite):
     def col(self,col):
         """C.col(tupple) --> changes colour of "Brush" to passed tupple"""
         self.set_colour = col
-
+        
+        
 
 class MicroBlock(pygame.sprite.Sprite):
     """MicroBlock Models pygame.sprite.Sprite to make 1/4 pixel"""
     def __init__(self,pos):
         """constructs MB at top left corner passed by tupple"""
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((56,56))
+        self.image = pygame.Surface((26,26))
         self.image.fill(white)
         
         self.rect = self.image.get_rect()
@@ -71,7 +71,10 @@ class MicroBlock(pygame.sprite.Sprite):
     def fill(self,col):
         """MB.fill(col_tupple) --> None changes colour of self.image to passed col_tupple"""
         self.image.fill(col)
-
+        
+    def update(self,scale):
+        self.rect.move_ip((120*scale,0))
+        
 
 class MapSave(object):
     '''Object representing the structure of a map's save file'''
@@ -79,7 +82,6 @@ class MapSave(object):
         #coordinate counting starts from 0
         self.lines = []
         self.path = path
-        self.is_saved = False
         
         # format is ((x1, y1), (x2, y2)) relative to blocks | x and y values are block counts NOT pixel counts
         # where the first sub tuple is where the block appears on the map
@@ -98,9 +100,3 @@ class MapSave(object):
     
     def add_block(line, key):
         self.lines[line] += key
-    
-    def save(self):
-        self.is_saved = True
-    
-    def modify(self):
-        self.is_saved = False
