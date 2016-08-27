@@ -4,7 +4,9 @@ class Button(pygame.sprite.Sprite):
     '''Text_Button(path, pos)
     image found @ path displayed @ position pos
     Sub class of pygame.sprite.Sprite'''    
-    def __init__(self, path, pos, size=35, centered=False, command=None):
+    def __init__(self, path, pos, size=35):
+        '''Button.__init__(path, pos, size) -> None
+        Initialize the button object with an image found @ path, position of pos and x/y dimentions of size'''
         pygame.sprite.Sprite.__init__(self)
         self.pos = (size*pos[0], size*pos[1])
         self.image = pygame.transform.scale(pygame.image.load(path), (size, size))
@@ -13,20 +15,17 @@ class Button(pygame.sprite.Sprite):
         
         #used to compare buttons
         self.path = path
-        
-        
-        if command != None:
-            self.function = {'command' : command}
+
     def draw(self, destination):
+        '''Button.draw(S) -> None
+        blit Button onto pygame.Surface S'''
         destination.blit(self, self.pos)
     
-    def update(self):
-        pass
-    
+
 class Cursor(pygame.sprite.Sprite):
     '''Cursor Object Models Pygame Sprite class to use pygame.sprite.collide with mousepoint'''
     def __init__(self):
-        """ takes no arguments construct off mouse input"""
+        """Initialize the Cursor object"""
         pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)
         self.set_colour = (90,127,113) 
@@ -37,7 +36,7 @@ class Cursor(pygame.sprite.Sprite):
         self.rect = pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)
         
     def col(self,col):
-        """C.col(tupple) --> changes colour of "Brush" to passed tupple"""
+        """C.col(tuple) --> changes colour of "Brush" to passed tuple"""
         self.set_colour = col
         
         
@@ -45,7 +44,8 @@ class Cursor(pygame.sprite.Sprite):
 class MicroBlock(pygame.sprite.Sprite):
     """MicroBlock Models pygame.sprite.Sprite to make 1/4 pixel"""
     def __init__(self,pos):
-        """constructs MB at top left corner passed by tupple"""
+        """MicroBlock.__init__(pos) -> None
+        Initialize the MicroBlock object"""
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((26,26))
         self.image.fill(white)
@@ -56,21 +56,23 @@ class MicroBlock(pygame.sprite.Sprite):
         self.char = " "
         
     def fill(self,col):
-        """MB.fill(col_tupple) --> None changes colour of self.image to passed col_tupple"""
+        """MicroBlock.fill(col_tuple) --> None changes colour of self.image to passed col_tuple"""
         self.image.fill(col)
         
     def update(self,scale):
+        '''MicroBlock.update(scale) -> None
+        update MicroBlock's visual display position'''
         self.rect.move_ip((120*scale,0))
         
-
-
-
 
 
 
 class MapSave(object):
     '''Object representing the structure of a map's save file'''
     def __init__(self, path=None):
+        '''MapSave.__init__(self, path) -> None
+        Initialize the MapSave object.
+        path defaults to None'''
         #coordinate counting starts from 0
         
         self.lines = ['01:','02:','03:','04:','05:','06:','07:','08:','09:',
@@ -96,8 +98,16 @@ class MapSave(object):
         return out
     
     def add_block(self, line, key):
-
+        '''MapSave.add_block(line, key) -> None
+        add block value key to line'''
         self.lines[line] += key
     
+    def add_moving_block(self, pos, delta):
+        '''MapSave.add_moving_block(p, d) -> None
+        add a moving block with starting position p that moves by a relative position of d'''
+        self.movingTiles.append('{},{}'.format(pos, delta))
+    
     def set_saved(self, state):
+        '''MapSave.set_saved(state) -> None
+        set MapSave.is_saved to the value of state'''
         self.is_saved = state
