@@ -84,6 +84,7 @@ class MapSave(object):
         #and the second is where it will move to
         
         self.movingTiles = []
+        #[[],()]
     
     def __str__(self):
         '''MapSave.__str__() <==> str(MapSave) -> str
