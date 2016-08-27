@@ -95,7 +95,7 @@ class MapSave(object):
         for line in self.lines:
             out += '{}\n'.format(line)
         for tile in self.movingTiles:
-            out += '{},{}\n'.format(tile[0],tile[1])
+            out += '{}:{}\n'.format(str(tile[0]).strip(['[',']']),tile[1])
         return out
     
     def add_block(self, line, key):
@@ -103,10 +103,10 @@ class MapSave(object):
         add block value key to line'''
         self.lines[line] += key
     
-    def add_moving_block(self, pos, delta):
+    def add_moving_block(self, data):
         '''MapSave.add_moving_block(p, d) -> None
         add a moving block with starting position p that moves by a relative position of d'''
-        self.movingTiles.append('{},{}'.format(pos, delta))
+        self.movingTiles.append(data)
     
     def set_saved(self, state):
         '''MapSave.set_saved(state) -> None
