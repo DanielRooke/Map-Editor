@@ -39,13 +39,20 @@ def read_file(path):
         for line in file:
             #lines representing map blocks
             if line[0] in '0123456789':
-                line.strip('\n')
+                line=line[3:].strip('\n')
                 for char in line:
                     save.add_block(char)
             #find lines displaying start and end postions for moving blocks
             elif line.startswith('('):
                 #(x1, y1),(x2, y2)
-                pass
+                #split the values in the line into a list
+                line = line.strip(['(',')'])
+                line = line.split('),(')
+                for i in line:
+                    i = i.split(',')
+                #string is now [[x1, y1], [xd, yd]]
+                #add the moving block to MapSave object
+                save.add_moving_block((line[0][0], line[0][1]), (line[1][0], line[1][1]))
         return save
     else:
         #false first line case
@@ -199,16 +206,13 @@ if __name__ == '__main__':
                             platform = platform[0]
                             
                             
-                            
-                            
-                            
                         
                         elif openButton.rect.collidepoint(event.pos):#click collision with open file button
                             
                             #search file directory for a saved txt
                             filePath = fileopenbox(filetypes=['\*.txt'])
                             if filePath != '.':
-                                save = reader.open_file(filePath)
+                                save = read_file(filePath)
                                 state = 'editor'
                                 
                 
