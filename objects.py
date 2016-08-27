@@ -64,6 +64,11 @@ class MicroBlock(pygame.sprite.Sprite):
         self.rect.move_ip((120*scale,0))
         
 
+
+
+
+
+
 class MapSave(object):
     '''Object representing the structure of a map's save file'''
     def __init__(self, path=None):
@@ -97,3 +102,65 @@ class MapSave(object):
     
     def set_saved(self, state):
         self.is_saved = state
+        
+        
+        
+
+
+
+        
+def read_file(path):
+    '''read_file(path) -> MapSave()
+    read a map txt file and return a MapSave object.
+    return None if ad error is encountered'''
+    file = open(path)
+    save = MapSave(path)
+    #check each line
+    if file[0] == 'APPLICATION MAP\n':
+        for line in file:
+            #lines representing map blocks
+            if line[0] in '0123456789':
+                line.strip('\n')
+                for char in line:
+                    save.add_block(char)
+            #find lines displaying start and end postions for moving blocks
+            elif line.startswith('('):
+                #(x1, y1),(x2, y2)
+                pass
+        return save
+    else:
+        #false first line case
+        print('ERROR: NOT A MAP FILE')
+        return None
+        
+
+
+
+
+
+def new_world():
+    platform = []
+    
+    for x in range(64):
+        """builds in collums! ignore gobbly goop 
+        12
+        34
+        56
+        78    
+        
+        need to make interpreter to turn platform into list of lists of chars that will be used for writing
+        """
+        for y in range(9):
+            
+            temp = pygame.sprite.OrderedUpdates([
+                MicroBlock(((x*60+104,4+y*60))), 
+                MicroBlock(((x*60+132,4+y*60))), 
+                MicroBlock(((x*60+104,32+y*60))),
+                MicroBlock(((x*60+132,32+y*60)))
+            ])
+            
+            platform.append(temp)
+            length = x + 1
+    
+    return platform, length
+

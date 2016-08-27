@@ -1,5 +1,5 @@
 import pygame
-from easygui import fileopenbox,filesavebox
+from easygui import fileopenbox,filesavebox,boolbox
 import os
 import pygame
 from pygame.locals import *
@@ -21,7 +21,7 @@ window = pygame.display.set_mode(size, pygame.RESIZABLE)
 pygame.display.set_caption("Title")
 
 #main surface
-screen = pygame.Surface(size).convert()
+screen = pygame.Surface((2000,2000)).convert()
 screen.fill(white)
 
 
@@ -36,7 +36,7 @@ def maptotextlist(platform,map_length):
     
     for x in range(map_length):
         for y in range(9):
-            for sprite in platform[9*x+y]:
+            for sprite in platform[9*x+y].sprites():
                 if counter % 2 == 0:
                     left_ori.append(sprite.char)
                 elif counter %2 != 0:
@@ -48,6 +48,7 @@ def maptotextlist(platform,map_length):
                 counter += 1 
         text_list.append(left_ori)
         text_list.append(right_ori)
+        
         left_ori = []
         right_ori = []
                    
