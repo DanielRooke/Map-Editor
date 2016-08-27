@@ -18,6 +18,112 @@ LavaTile : L
 '''
 
 
+'''-----------------------------FUNCTIONS------------------------------------'''
+
+
+def end_task():
+    '''set quit values to exit program'''
+    global exit
+    global state
+    exit, state = True, 'quit'
+
+
+def read_file(path):
+    '''read_file(path) -> MapSave()
+    read a map txt file and return a MapSave object.
+    return None if ad error is encountered'''
+    file = open(path)
+    save = MapSave(path)
+    #check each line
+    if file[0] == 'APPLICATION MAP\n':
+        for line in file:
+            #lines representing map blocks
+            if line[0] in '0123456789':
+                line.strip('\n')
+                for char in line:
+                    save.add_block(char)
+            #find lines displaying start and end postions for moving blocks
+            elif line.startswith('('):
+                #(x1, y1),(x2, y2)
+                pass
+        return save
+    else:
+        #false first line case
+        print('ERROR: NOT A MAP FILE')
+        return None
+
+def write_file(filePath, save):
+    '''write_file(path, MapSave) -> None
+    write the string version of MapSave to a txt at path'''
+    #check if file pre exists (write or overwrite)
+    file = open(filePath, 'w')
+    #writei the string version of save to the file
+    file.write(str(save))
+    #close txt
+    file.close()
+
+def maptotextlist(platform,map_length):
+    """M2Tl(list,int) --> list 
+    maptotextlist turn the unorganized list of groups into list of collums of characters"""
+    
+    text_list = []
+    left_ori = []
+    right_ori = []
+    counter = 0 
+    
+    for x in range(map_length):
+        for y in range(9):
+            for sprite in platform[9*x+y].sprites():
+                if counter % 2 == 0:
+                    left_ori.append(sprite.char)
+                elif counter %2 != 0:
+                    right_ori.append(sprite.char)
+                
+                elif counter == 35:
+                    counter == 0
+                    
+                counter += 1 
+        text_list.append(left_ori)
+        text_list.append(right_ori)
+        
+        left_ori = []
+        right_ori = []
+                   
+    return text_list
+
+def new_world():
+    '''new_world() -> list, int
+    return platform list and map width'''
+    platform = []
+    
+    for x in range(64):
+        """builds in collums! ignore gobbly goop 
+        12
+        34
+        56
+        78    
+        
+        need to make interpreter to turn platform into list of lists of chars that will be used for writing
+        """
+        for y in range(9):
+            
+            temp = pygame.sprite.OrderedUpdates([
+                MicroBlock(((x*60+104,4+y*60))), 
+                MicroBlock(((x*60+132,4+y*60))), 
+                MicroBlock(((x*60+104,32+y*60))),
+                MicroBlock(((x*60+132,32+y*60)))
+            ])
+            
+            platform.append(temp)
+            length = x + 1
+    
+    return platform, length
+
+
+
+
+'''--------------------------------Variables---------------------------------'''
+
 #______________________ FOR SAVING
 
 filePath = False
@@ -35,11 +141,6 @@ saveButton = Button("save.png", (2, 0))
 homeGroup = pygame.sprite.Group(newButton, openButton)
 editorGroup = pygame.sprite.Group(newButton, openButton, saveButton)
 
-def end_task():
-    '''set quit values to exit program'''
-    global exit
-    global state
-    exit, state = True, 'quit'
     
 #______________________ FOR EDITOR
 
@@ -68,7 +169,7 @@ scroll_count = 0
 user = Cursor()
 
 
-#Main Program Loop (Set exit to true to quit program)
+#Main Program Loop (call end_task() to exit program)
 if __name__ == '__main__':
     while not exit:
         
