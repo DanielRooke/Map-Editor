@@ -44,15 +44,15 @@ def read_file(path):
                     save.add_block(char)
             #find lines displaying start and end postions for moving blocks
             elif line.startswith('('):
-                #(x1, y1),(x2, y2)
+                #[[(x1, y1)],(xd, yd)]
+                #(),(),():()
                 #split the values in the line into a list
-                line = line.strip(['(',')'])
-                line = line.split('),(')
-                for i in line:
-                    i = i.split(',')
-                #string is now [[x1, y1], [xd, yd]]
-                #add the moving block to MapSave object
-                save.add_moving_block((line[0][0], line[0][1]), (line[1][0], line[1][1]))
+                line = line.strip(["(",")"])
+                line = line.split(':')
+                line[0] = line[0].split('),(')
+                for tile in line[0]:
+                    save.add_moving_block(tile, line[1])
+                
         return save
     else:
         #false first line case
