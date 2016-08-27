@@ -1,5 +1,5 @@
 import pygame
-from easygui import fileopenbox,filesavebox,boolbox
+from easygui import fileopenbox,filesavebox,boolbox,multenterbox
 import os
 import pygame
 from pygame.locals import *

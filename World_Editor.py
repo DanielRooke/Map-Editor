@@ -156,6 +156,11 @@ overlay.fill((165,165,165))
 overlay_rect = overlay.get_rect()
 overlay_rect.topleft = (0,0)
 
+find_next = 0
+moving_list = []
+
+lock = 0
+
 #buttons group holds all the buttons at their respective location
 buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,0),50),
                                Button("editor_01.bmp",(1,0),50),
@@ -166,6 +171,7 @@ buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,0),50),
                                Button("editor_06.bmp",(0,3),50),
                                Button("editor_07.bmp",(1,7),50),
                                Button("editor_08.bmp",(0,7),50),
+                               Button("editor_09.bmp",(1,3),50),
                                Button("save.png",(0,9),50),
                                Button("new.png",(1,9),50)
                                ])
@@ -204,6 +210,7 @@ if __name__ == '__main__':
                             platform = new_world()
                             map_length = platform[1]
                             platform = platform[0]
+                            save = MapSave()
                             
                             
                         
@@ -253,42 +260,71 @@ if __name__ == '__main__':
                         
                         for button in pygame.sprite.spritecollide(user,buttons,0):
                             #if leftclick collides with any buttons it checks the tags to set appropriate colour
-                            if button.path == "editor_00.bmp":
+                            if button.path == "editor_00.bmp" and not lock:
                                 #white "Erase"
                                 user.col((255,255,255))
                                 user.set_char = " "
                            
-                            elif button.path == "editor_01.bmp":
+                            elif button.path == "editor_01.bmp" and not lock:
                                 #Baricade or seafoam green
                                 user.col((90,127,113))
                                 user.set_char = "W"
         
-                            elif button.path == "editor_02.bmp":
+                            elif button.path == "editor_02.bmp" and not lock:
                                 #lava 
                                 user.col((96,33,16))  
                                 user.set_char = "L"
                                 
-                            elif button.path == "editor_03.bmp":
+                            elif button.path == "editor_03.bmp"and not lock:
                                 #falling
                                 user.col((90,83,113))  
                                 user.set_char = "F"
                                 
-                            elif button.path == "editor_04.bmp":
+                            elif button.path == "editor_04.bmp"and not lock:
                                 #start lime green
                                 user.col((136,198,44))
                                 user.set_char = "S"
                                 
-                            elif button.path == "editor_05.bmp":
+                            elif button.path == "editor_05.bmp"and not lock:
                                 #end tile gold
                                 user.col((151,126,44))
                                 user.set_char = "G"
                                 
-                            elif button.path == "editor_06.bmp":
+                            elif button.path == "editor_06.bmp"and not lock:
                                 #one way blue
                                 user.col((0, 0, 140))
                                 user.set_char = ">"
                                 
-                            elif button.path == "editor_07.bmp":
+                                
+                            elif button.path == "editor_09.bmp" :
+                                buttons.add(Button("editor_10.bmp",(1,4),50))
+                                user.col((44,44,44))
+                                user.set_char = "M"
+                                lock = True
+                                find_next = 1
+                                moving_list = []
+                                
+                                
+                            elif button.path == "editor_10.bmp":
+                                button.kill()
+                                user.col((90,127,113))  
+                                user.set_char = "W"         
+                                lock = 0
+                                find_next = 0
+                                
+                                delta = multenterbox("Enter the delta","Editor",("x:","y:"))
+                                
+                                if delta != None:                                    
+                                    delta = (delta[0],delta[1])
+                                
+                                save.movingTiles.append([moving_list,delta])
+                                
+                                
+                                
+                                    
+                                    
+                                
+                            elif button.path == "editor_07.bmp"and not lock:
                                 #expand by two
                                 for y in range(2):
                                     for x in range(9):
@@ -305,7 +341,7 @@ if __name__ == '__main__':
                                         platform.append(temp)
                                     map_length += 1
                                     
-                            elif button.path == "editor_08.bmp":
+                            elif button.path == "editor_08.bmp"and not lock:
                                 
                                 #decrease by two (map_length has to be maintaind to add on after )
                                 map_length -= 2
@@ -315,15 +351,14 @@ if __name__ == '__main__':
                                 
                                 
                                 
-                            elif button.path == "save.png":
-                                
+                            elif button.path == "save.png"and not lock:
+                                print(save)
                                 if filePath == False or filePath == None:
                                     filePath = filesavebox(filetypes=['\*.txt']) #ask for file path
                                     
                                 
                                 if filePath != None:
-                                    
-                                    save = MapSave()                                
+                                                                  
                                     map_list = maptotextlist(platform,map_length)
                                                                
                                     for col in map_list:
@@ -334,8 +369,8 @@ if __name__ == '__main__':
                                     write_file(filePath,save)
                             
                             
-                            elif button.path == "new.png":
-                                
+                            elif button.path == "new.png"and not lock:
+                                save = MapSave()  
                                 confirm = boolbox("Are you Sure:")
                                 
                                 if confirm:
@@ -347,10 +382,7 @@ if __name__ == '__main__':
                                     
                         if  not overlay_rect.colliderect(user.rect):
                             left_click = 1
-                                
-                                
-                                
-                                
+         
                            
                         #enables drag to paint macro         
                         
@@ -388,18 +420,110 @@ if __name__ == '__main__':
                     for group in platform:
                         if pygame.sprite.spritecollide(user,group,0):
                             #for each sprite in the group collided fill current with brush 
-                            for i in group.sprites():
-                                i.fill(user.set_colour)
-                                i.char = user.set_char
+                            
+                            for sprite in group.sprites():
+                                if sprite.image.get_at((0,0)) != user.set_colour:
+                                    sprite.fill(user.set_colour)
+                                    sprite.char = user.set_char
+                                    
+                                    if user.set_colour != (44,44,44):
+                                    
+                                        group_pos = platform.index(group)
+                                        y_pos = (9-group_pos%9)*2
+                                        while group_pos%9 != 0:
+                                            group_pos -= 1
+                                        x_pos = (group_pos//9+1)*2
+                                        
+                                        if sprite == group.sprites()[0]:
+                                            x_pos -= 1
+                                        elif sprite == group.sprites()[2]:
+                                            x_pos -= 1 
+                                            y_pos -= 1
+                                            
+                                        elif sprite == group.sprites()[3]:
+                                            y_pos -= 1
+                                            
+                                            
+                                        if (x_pos,y_pos) in moving_list:
+                                            moving_list.remove((x_pos,y_pos))                                    
+                                    
+                                            
+                                    if find_next:
+                                        group_pos = platform.index(group)
+                                        y_pos = (9-group_pos%9)*2
+                                        while group_pos%9 != 0:
+                                            group_pos -= 1
+                                        x_pos = (group_pos//9+1)*2
+                                        
+                                        if sprite == group.sprites()[0]:
+                                            x_pos -= 1
+                                        elif sprite == group.sprites()[2]:
+                                            x_pos -= 1 
+                                            y_pos -= 1
+                                            
+                                        elif sprite == group.sprites()[3]:
+                                            y_pos -= 1
+                                            
+                                        moving_list.append((x_pos,y_pos))
+                                        
+                        
+                            
+                            
                     
                 
                 elif right_click:
                     for group in platform:
                         #for each sprite being collided with user fill current
                         for sprite in pygame.sprite.spritecollide(user,group,0):
-                            sprite.fill(user.set_colour)            
-                            sprite.char = user.set_char
                             
+                            if sprite.image.get_at((0,0)) != user.set_colour:
+                                
+                                
+                                sprite.fill(user.set_colour)           
+                                sprite.char = user.set_char                                
+                            
+                                if user.set_colour != (44,44,44):
+                                    #save.movingTiles
+                                    group_pos = platform.index(group)
+                                    y_pos = (9-group_pos%9)*2
+                                    while group_pos%9 != 0:
+                                        group_pos -= 1
+                                    x_pos = (group_pos//9+1)*2
+                                    
+                                    if sprite == group.sprites()[0]:
+                                        x_pos -= 1
+                                    elif sprite == group.sprites()[2]:
+                                        x_pos -= 1 
+                                        y_pos -= 1
+                                        
+                                    elif sprite == group.sprites()[3]:
+                                        y_pos -= 1
+                                        
+                                    moving_list.remove((x_pos,y_pos))
+                            
+                            
+                            
+                            
+                            
+                            
+                                if find_next:
+                                    group_pos = platform.index(group)
+                                    y_pos = (9-group_pos%9)*2
+                                    while group_pos%9 != 0:
+                                        group_pos -= 1
+                                    x_pos = (group_pos//9+1)*2
+                                    
+                                    if sprite == group.sprites()[0]:
+                                        x_pos -= 1
+                                    elif sprite == group.sprites()[2]:
+                                        x_pos -= 1 
+                                        y_pos -= 1
+                                        
+                                    elif sprite == group.sprites()[3]:
+                                        y_pos -= 1
+                                        
+                                    moving_list.append((x_pos,y_pos))
+                                    
                     
                         
             #moves Cursor object                
