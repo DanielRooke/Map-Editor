@@ -113,7 +113,7 @@ class MapSave(object):
         
             for cord in tile.storage:
                 out += "|{},{}".format(cord[0],cord[1])
-            out += ":{}\n".format(tile.delta)
+            out += "|:{}\n".format(tile.delta)
         return out
     
     def add_block(self, line, key):
@@ -134,24 +134,134 @@ def read_file(path):
     read a map txt file and return a MapSave object.
     return None if ad error is encountered'''
     file = open(path)
+    isFile = False
+    counter = 0
     save = MapSave(path)
+
     #check each line
-    if file[0] == 'APPLICATION MAP\n':
-        for line in file:
-            #lines representing map blocks
-            if line[0] in '0123456789':
-                line.strip('\n')
-                for char in line:
-                    save.add_block(char)
-            #find lines displaying start and end postions for moving blocks
-            elif line.startswith('('):
-                #(x1, y1),(x2, y2)
-                pass
-        return save
-    else:
-        #false first line case
+    ListOfMoving = []
+    ListOfLines =[]
+    platform = []
+    
+
+
+    
+    
+    
+
+    for line in file:
+        if counter == 0:
+            if line == "APPLICATION MAP\n":
+                isFile = True
+        if line[0] in "0123456789":
+            line = line[3:-1]
+            ListOfLines.append(line)
+        counter += 1
+        
+        
+        
+        
+        if line[0] == "|":
+            temp = MovingBlock()
+            delta = line[line.find(":")+2:-2]
+            line = line[1:line.find(":")]
+            
+            
+            for char in line:
+                if char == "|":
+                    new = line.find("|")
+                    cord = line[:new].split(",")
+                    cord = (int(cord[0]),int(cord[1]))
+                    line = line[new+1:]
+                    temp.storage.append(cord)
+            
+            delta = delta.split(",")
+            delta = (int(delta[0]),int(delta[1]))
+            temp.delta = delta
+            ListOfMoving.append(temp)
+            
+            
+        
+    
+
+    if not isFile:
         print('ERROR: NOT A MAP FILE')
-        return None
+    else:
+        maplength = len(ListOfLines[0]) //2
+        #take list of rows turn into platform
+        #take [0] and [1] then remove
+        temp = pygame.sprite.OrderedUpdates()
+        #in range of map length // 2
+        
+        
+        
+        for x in range(maplength):
+            for y in range(18):
+                
+                twochars = ListOfLines[y][:2]
+                ListOfLines[y] = ListOfLines[y][2:]
+                
+                for char in range(2):
+                    if y%2 == 0:
+                        #top half
+                        if char == 0:
+                            #top left
+                            block = MicroBlock(((x*60+104,4+y*30)))
+                            
+                        else:
+                            #top right
+                            block = MicroBlock(((x*60+132,4+y*30)))
+                    else:
+                        #bottom half
+                        if char == 0:
+                            #bottom left
+                            block = MicroBlock(((x*60+104,2+y*30)))
+                            
+                        else:
+                            #bottom right
+                            block = MicroBlock(((x*60+132,2+y*30)))                       
+                    
+                    if twochars[char] == "W":
+                        block.fill((90,127,113))
+                        block.char = "W"
+                    
+                    elif twochars[char] == " ":
+                        block.fill(white)
+                        block.char = " "
+                        
+                    elif twochars[char] == "L":
+                        block.fill((96,33,16))
+                        block.char = "L"
+                        
+                    elif twochars[char] == "S":
+                        block.fill((136,198,44))
+                        block.char = "S"
+                        
+                    elif twochars[char] == "F":
+                        block.fill((90,83,113))
+                        block.char = "F"
+                        
+                    elif twochars[char] == "G":
+                        block.fill((151,126,44))
+                        block.char = "G"
+                        
+                    elif twochars[char] == "M":
+                        block.fill((44,44,44))
+                        block.char = "M"
+                    
+                    
+                        
+                    elif twochars[char] == ">":
+                        block.fill((0, 0, 140))
+                        block.char = ">"
+                    temp.add(block)        
+                
+                if len(temp.sprites()) == 4:
+                    platform.append(temp)
+                    temp = pygame.sprite.OrderedUpdates()
+                    
+        print(type(ListOfMoving))
+        return (platform,maplength,ListOfMoving)
         
 
 

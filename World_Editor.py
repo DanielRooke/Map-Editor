@@ -112,10 +112,18 @@ if __name__ == '__main__':
                         elif openButton.rect.collidepoint(event.pos):#click collision with open file button
                             
                             #search file directory for a saved txt
-                            filePath = fileopenbox(filetypes=['\*.txt'])
+                            filePath = fileopenbox(filetypes=['.txt'])
                             if filePath != '.':
-                                save = reader.open_file(filePath)
-                                state = 'editor'
+                                save = MapSave(filePath) 
+                                platform = read_file(filePath)
+                                if platform != None:
+                                        
+                                    map_length = platform[1]
+                                    print(type(platform[2]))
+                                    save.movingTiles = (platform[2])
+                                    platform = platform[0]
+                                    screen.fill(black)
+                                    state = 'editor'
                                 
                 
                 
@@ -199,7 +207,7 @@ if __name__ == '__main__':
                                     for x in range(9):
                                         #MicroBlock(((map_length*60 - 60*scroll_count*2,225)))
                                         
-                                        temp = pygame.sprite.Group([
+                                        temp = pygame.sprite.OrderedUpdates([
                                             MicroBlock(((map_length*60+104-scroll_count*120,4+x*60))),
                                             MicroBlock(((map_length*60+132-scroll_count*120,4+x*60))),
                                             MicroBlock(((map_length*60+104-scroll_count*120,32+x*60))),
@@ -248,7 +256,7 @@ if __name__ == '__main__':
                                     if block.isEmpty():
                                         save.movingTiles.remove(block)
                                 
-                                if filePath == False or filePath == None:
+                                if save.path == None:
                                     filePath = filesavebox(filetypes=['\*.txt']) #ask for file path
                                     
                                 
@@ -262,6 +270,8 @@ if __name__ == '__main__':
                                     
                                     
                                     write_file(filePath,save)
+                                    
+                                    end_task()
                             
                             
                             elif button.path == "new.png"and not lock:
@@ -273,6 +283,7 @@ if __name__ == '__main__':
                                     platform = new_world()
                                     map_length = platform[1]
                                     platform = platform[0]
+                                    
                                     
                                     
                         if  not overlay_rect.colliderect(user.rect):
