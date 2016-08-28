@@ -63,9 +63,24 @@ class MicroBlock(pygame.sprite.Sprite):
     def update(self,scale):
         self.rect.move_ip((120*scale,0))
         
-
-
-
+        
+class MovingBlock(object):
+    """models a moving block in game keeping the cords and change in dirrection"""
+    def __init__(self):
+        """creats MovingBlock with no cords and no delta"""
+        self.storage = []
+        self.delta = None
+        
+    def isEmpty(self):
+        return len(self.storage) == 0
+    
+    def __str__(self):
+        out = ""
+        for cord in self.storage():
+            out += "{},{}|".format(cord[0],cord[1])
+        
+        return out 
+    
 
 
 
@@ -93,8 +108,12 @@ class MapSave(object):
 
         for line in self.lines:
             out += '{}\n'.format(line)
+            
         for tile in self.movingTiles:
-            out += '{},{}\n'.format(tile[0],tile[1])
+        
+            for cord in tile.storage:
+                out += "|{},{}".format(cord[0],cord[1])
+            out += ":{}\n".format(tile.delta)
         return out
     
     def add_block(self, line, key):
@@ -143,14 +162,6 @@ def new_world():
     platform = []
     
     for x in range(64):
-        """builds in collums! ignore gobbly goop 
-        12
-        34
-        56
-        78    
-        
-        need to make interpreter to turn platform into list of lists of chars that will be used for writing
-        """
         for y in range(9):
             
             temp = pygame.sprite.OrderedUpdates([
@@ -164,4 +175,5 @@ def new_world():
             length = x + 1
     
     return platform, length
+
 

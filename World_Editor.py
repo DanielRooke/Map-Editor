@@ -49,7 +49,7 @@ overlay_rect = overlay.get_rect()
 overlay_rect.topleft = (0,0)
 
 find_next = 0
-moving_list = []
+moving = MovingBlock()
 
 lock = 0
 
@@ -190,32 +190,6 @@ if __name__ == '__main__':
                                 user.col((0, 0, 140))
                                 user.set_char = ">"
                                 
-                                
-                            elif button.path == "editor_09.bmp" :
-                                buttons.add(Button("editor_10.bmp",(1,4),50))
-                                user.col((44,44,44))
-                                user.set_char = "M"
-                                lock = True
-                                find_next = 1
-                                moving_list = []
-                                
-                                
-                            elif button.path == "editor_10.bmp":
-                                button.kill()
-                                user.col((90,127,113))  
-                                user.set_char = "W"         
-                                lock = 0
-                                find_next = 0
-                                
-                                delta = multenterbox("Enter the delta","Editor",("x:","y:"))
-                                
-                                if delta != None:                                    
-                                    delta = (delta[0],delta[1])
-                                
-                                save.movingTiles.append([moving_list,delta])
-                                
-                                
-                                
                                     
                                     
                                 
@@ -231,7 +205,6 @@ if __name__ == '__main__':
                                             MicroBlock(((map_length*60+104-scroll_count*120,32+x*60))),
                                             MicroBlock(((map_length*60+132-scroll_count*120,32+x*60)))
                                         ])
-                                        
                                                 
                                         platform.append(temp)
                                     map_length += 1
@@ -243,11 +216,38 @@ if __name__ == '__main__':
                                 platform = platform[:-18]
                                 
                                 
+                            elif button.path == "editor_09.bmp" :
+                                buttons.add(Button("editor_10.bmp",(1,4),50))
+                                user.col((44,44,44))
+                                user.set_char = "M"
+                                lock = True
+                                find_next = 1
+                                moving = MovingBlock()
+                                
+                                
+                            elif button.path == "editor_10.bmp":
+                                button.kill()
+                                user.col((90,127,113))  
+                                user.set_char = "W"         
+                                lock = 0
+                                find_next = 0
+                                
+                                delta = multenterbox("Enter the delta","Editor",("x:","y:"))
+                                if delta != None:                                    
+                                    moving.delta = (int(delta[0]),int(delta[1]))
+                                    
+                                save.movingTiles.append(moving)
+                                
+                                  
                                 
                                 
                                 
                             elif button.path == "save.png"and not lock:
-                                print(save)
+                                
+                                for block in save.movingTiles:
+                                    if block.isEmpty():
+                                        save.movingTiles.remove(block)
+                                
                                 if filePath == False or filePath == None:
                                     filePath = filesavebox(filetypes=['\*.txt']) #ask for file path
                                     
@@ -321,8 +321,13 @@ if __name__ == '__main__':
                                     sprite.fill(user.set_colour)
                                     sprite.char = user.set_char
                                     
-                                    if user.set_colour != (44,44,44):
                                     
+                                    
+                                    
+                                    #REMOVE or Overwrite a moving tile
+                                    if user.set_colour != (44,44,44):
+                                        
+                                        
                                         group_pos = platform.index(group)
                                         y_pos = (9-group_pos%9)*2
                                         while group_pos%9 != 0:
@@ -337,11 +342,18 @@ if __name__ == '__main__':
                                             
                                         elif sprite == group.sprites()[3]:
                                             y_pos -= 1
+                                                    
+                                        if (x_pos,y_pos) in moving.storage:
+                                            moving.storage.remove((x_pos,y_pos))                                    
+                                        
+                                        
+                                        #makes erase work on all MovingBlock objects
+                                        else:
+                                            for i in save.movingTiles:
+                                                for cord in i.storage:
+                                                    if (x_pos,y_pos) == cord:
+                                                        i.storage.remove(cord)                                         
                                             
-                                            
-                                        if (x_pos,y_pos) in moving_list:
-                                            moving_list.remove((x_pos,y_pos))                                    
-                                    
                                             
                                     if find_next:
                                         group_pos = platform.index(group)
@@ -359,13 +371,8 @@ if __name__ == '__main__':
                                         elif sprite == group.sprites()[3]:
                                             y_pos -= 1
                                             
-                                        moving_list.append((x_pos,y_pos))
+                                        moving.storage.append((x_pos,y_pos))
                                         
-                        
-                            
-                            
-                    
-                
                 elif right_click:
                     for group in platform:
                         #for each sprite being collided with user fill current
@@ -377,6 +384,7 @@ if __name__ == '__main__':
                                 sprite.fill(user.set_colour)           
                                 sprite.char = user.set_char                                
                             
+                                #REMOVE or Overwrite a moving tile
                                 if user.set_colour != (44,44,44):
                                     #save.movingTiles
                                     group_pos = platform.index(group)
@@ -393,12 +401,18 @@ if __name__ == '__main__':
                                         
                                     elif sprite == group.sprites()[3]:
                                         y_pos -= 1
-                                        
-                                    moving_list.remove((x_pos,y_pos))
-                            
-                            
-                            
-                            
+                                                    
+                                    if (x_pos,y_pos) in moving.storage:
+                                        moving.storage.remove((x_pos,y_pos))                                    
+                                    
+                                    else:
+                                        for i in save.movingTiles:
+                                            for cord in i.storage:
+                                                if (x_pos,y_pos) == cord:
+                                                    i.storage.remove(cord)
+                                                    
+                                
+                                
                             
                             
                                 if find_next:
@@ -417,7 +431,7 @@ if __name__ == '__main__':
                                     elif sprite == group.sprites()[3]:
                                         y_pos -= 1
                                         
-                                    moving_list.append((x_pos,y_pos))
+                                    moving.storage.append((x_pos,y_pos))
                                     
                     
                         
@@ -431,8 +445,7 @@ if __name__ == '__main__':
             #draws all groups in platform
             for group in platform:
                 group.draw(window)
-            
-            
+                
             window.blit(overlay,overlay_rect)    
             buttons.draw(window)
         
