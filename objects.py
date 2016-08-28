@@ -5,7 +5,7 @@ class Button(pygame.sprite.Sprite):
     '''Text_Button(path, pos)
     image found @ path displayed @ position pos
     Sub class of pygame.sprite.Sprite'''    
-    def __init__(self, path, pos, size=35, centered=False, command=None):
+    def __init__(self, path, pos, size=50, centered=False, command=None):
         pygame.sprite.Sprite.__init__(self)
         self.pos = (size*pos[0], size*pos[1])
         self.image = pygame.transform.scale(pygame.image.load(path), (size, size))
@@ -81,9 +81,6 @@ class MovingBlock(object):
         
         return out 
     
-
-
-
 class MapSave(object):
     '''Object representing the structure of a map's save file'''
     def __init__(self, path=None):
@@ -96,7 +93,9 @@ class MapSave(object):
         
         # format is ((x1, y1), (x2, y2)) relative to blocks | x and y values are block counts NOT pixel counts
         # where the first sub tuple is where the block appears on the map
-        #and the second is where it will move to
+        #and the second is where it will moveto
+        
+        self.is_saved = False
         
         self.movingTiles = []
         #[[],()]
@@ -120,8 +119,8 @@ class MapSave(object):
 
         self.lines[line] += key
     
-    def set_saved(self, state):
-        self.is_saved = state
+    def set_saved(self):
+        self.is_saved = not self.is_saved
         
         
         
@@ -133,135 +132,137 @@ def read_file(path):
     '''read_file(path) -> MapSave()
     read a map txt file and return a MapSave object.
     return None if ad error is encountered'''
-    file = open(path)
-    isFile = False
-    counter = 0
-    save = MapSave(path)
-
-    #check each line
-    ListOfMoving = []
-    ListOfLines =[]
-    platform = []
-    
-
-
-    
-    
-    
-
-    for line in file:
-        if counter == 0:
-            if line == "APPLICATION MAP\n":
-                isFile = True
-        if line[0] in "0123456789":
-            line = line[3:-1]
-            ListOfLines.append(line)
-        counter += 1
-        
-        
-        
-        
-        if line[0] == "|":
-            temp = MovingBlock()
-            delta = line[line.find(":")+2:-2]
-            line = line[1:line.find(":")]
-            
-            
-            for char in line:
-                if char == "|":
-                    new = line.find("|")
-                    cord = line[:new].split(",")
-                    cord = (int(cord[0]),int(cord[1]))
-                    line = line[new+1:]
-                    temp.storage.append(cord)
-            
-            delta = delta.split(",")
-            delta = (int(delta[0]),int(delta[1]))
-            temp.delta = delta
-            ListOfMoving.append(temp)
-            
+    if path != None:
             
         
+        file = open(path)
+        isFile = False
+        counter = 0
+        save = MapSave(path)
     
-
-    if not isFile:
-        print('ERROR: NOT A MAP FILE')
-    else:
-        maplength = len(ListOfLines[0]) //2
-        #take list of rows turn into platform
-        #take [0] and [1] then remove
-        temp = pygame.sprite.OrderedUpdates()
-        #in range of map length // 2
+        #check each line
+        ListOfMoving = []
+        ListOfLines =[]
+        platform = []
+        
+    
+    
         
         
         
-        for x in range(maplength):
-            for y in range(18):
+    
+        for line in file:
+            if counter == 0:
+                if line == "APPLICATION MAP\n":
+                    isFile = True
+            if line[0] in "0123456789":
+                line = line[3:-1]
+                ListOfLines.append(line)
+            counter += 1
+            
+            
+            
+            
+            if line[0] == "|":
+                temp = MovingBlock()
+                delta = line[line.find(":")+2:-2]
+                line = line[1:line.find(":")]
                 
-                twochars = ListOfLines[y][:2]
-                ListOfLines[y] = ListOfLines[y][2:]
                 
-                for char in range(2):
-                    if y%2 == 0:
-                        #top half
-                        if char == 0:
-                            #top left
-                            block = MicroBlock(((x*60+104,4+y*30)))
-                            
+                for char in line:
+                    if char == "|":
+                        new = line.find("|")
+                        cord = line[:new].split(",")
+                        cord = (int(cord[0]),int(cord[1]))
+                        line = line[new+1:]
+                        temp.storage.append(cord)
+                
+                delta = delta.split(",")
+                delta = (int(delta[0]),int(delta[1]))
+                temp.delta = delta
+                ListOfMoving.append(temp)
+                
+                
+            
+        
+    
+        if not isFile:
+            print('ERROR: NOT A MAP FILE')
+        else:
+            maplength = len(ListOfLines[0]) //2
+            #take list of rows turn into platform
+            #take [0] and [1] then remove
+            temp = pygame.sprite.OrderedUpdates()
+            #in range of map length // 2
+            
+            
+            
+            for x in range(maplength):
+                for y in range(18):
+                    
+                    twochars = ListOfLines[y][:2]
+                    ListOfLines[y] = ListOfLines[y][2:]
+                    
+                    for char in range(2):
+                        if y%2 == 0:
+                            #top half
+                            if char == 0:
+                                #top left
+                                block = MicroBlock(((x*60+104,4+y*30)))
+                                
+                            else:
+                                #top right
+                                block = MicroBlock(((x*60+132,4+y*30)))
                         else:
-                            #top right
-                            block = MicroBlock(((x*60+132,4+y*30)))
-                    else:
-                        #bottom half
-                        if char == 0:
-                            #bottom left
-                            block = MicroBlock(((x*60+104,2+y*30)))
+                            #bottom half
+                            if char == 0:
+                                #bottom left
+                                block = MicroBlock(((x*60+104,2+y*30)))
+                                
+                            else:
+                                #bottom right
+                                block = MicroBlock(((x*60+132,2+y*30)))                       
+                        
+                        if twochars[char] == "W":
+                            block.fill((90,127,113))
+                            block.char = "W"
+                        
+                        elif twochars[char] == " ":
+                            block.fill(white)
+                            block.char = " "
                             
-                        else:
-                            #bottom right
-                            block = MicroBlock(((x*60+132,2+y*30)))                       
+                        elif twochars[char] == "L":
+                            block.fill((96,33,16))
+                            block.char = "L"
+                            
+                        elif twochars[char] == "S":
+                            block.fill((136,198,44))
+                            block.char = "S"
+                            
+                        elif twochars[char] == "F":
+                            block.fill((90,83,113))
+                            block.char = "F"
+                            
+                        elif twochars[char] == "G":
+                            block.fill((151,126,44))
+                            block.char = "G"
+                            
+                        elif twochars[char] == "M":
+                            block.fill((44,44,44))
+                            block.char = "M"
+                        
+                        
+                            
+                        elif twochars[char] == ">":
+                            block.fill((0, 0, 140))
+                            block.char = ">"
+                        temp.add(block)        
                     
-                    if twochars[char] == "W":
-                        block.fill((90,127,113))
-                        block.char = "W"
-                    
-                    elif twochars[char] == " ":
-                        block.fill(white)
-                        block.char = " "
+                    if len(temp.sprites()) == 4:
+                        platform.append(temp)
+                        temp = pygame.sprite.OrderedUpdates()
                         
-                    elif twochars[char] == "L":
-                        block.fill((96,33,16))
-                        block.char = "L"
-                        
-                    elif twochars[char] == "S":
-                        block.fill((136,198,44))
-                        block.char = "S"
-                        
-                    elif twochars[char] == "F":
-                        block.fill((90,83,113))
-                        block.char = "F"
-                        
-                    elif twochars[char] == "G":
-                        block.fill((151,126,44))
-                        block.char = "G"
-                        
-                    elif twochars[char] == "M":
-                        block.fill((44,44,44))
-                        block.char = "M"
-                    
-                    
-                        
-                    elif twochars[char] == ">":
-                        block.fill((0, 0, 140))
-                        block.char = ">"
-                    temp.add(block)        
-                
-                if len(temp.sprites()) == 4:
-                    platform.append(temp)
-                    temp = pygame.sprite.OrderedUpdates()
-                    
-        print(type(ListOfMoving))
-        return (platform,maplength,ListOfMoving)
+            return (platform,maplength,ListOfMoving)
         
 
 

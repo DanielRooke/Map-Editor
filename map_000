@@ -1,0 +1,22 @@
+APPLICATION MAP
+01:WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    
+02:WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    
+03:WWWW        WW               WWWWWWWWWWW                                                          >>                      WW    
+04:WWWW        WW               WWWWWWWWWWW                                                          >>                      WW    
+05:WWWW  SS    WW               WWWWWWWWWWW                                                          >>                    GGWW    
+06:WWWW  SS    WW               WWWWWWWWWWW                                                          >>                    GGWW    
+07:WWWW  FF    WW    WWWWWWWW   WWWWWWWWWWW                                    MMMM  WWWWWWWWWWWWWWWWWWFFFFFFFFFFFFFFFFFFWWWWWW    
+08:WWWW  FF    WW          WW   WWWWWWWWWWW                                    MMMM  WWWWWWWWWWWWWWWWWWFFFFFFFFFFFFFFFFFFWWWWWW    
+09:WWWW        WW          WW             >                                                  WWWWWW  WW                      WW    
+10:WWWW        WW          WW             >                                                  WWWWWW  WW                      WW    
+11:WWWW        WWWWWW      WW             >                                                  WW      WW                      WW    
+12:WWWW              WW    WW             >                                                          WW                      WW    
+13:WWWW                    WWWWFFFFFFFFWWWW  MM          WWWW      MMMM                              WWLLLLLLLLLLLLLLLLLLLLLLWW    
+14:WWWW                  WWWWWW        WWWW  MM          WWWW      MMMM                    WW        WWLLLLLLLLLLLLLLLLLLLLLLWW    
+15:WWWW                    WWWW        WWWW  MM          WWWWWW                          WWWW        WWLLLLLLLLLLLLLLLLLLLLLLWW    
+16:WWWW                    WWWW        WWWW  MM          WWWWWW                          WWWW        WWLLLLLLLLLLLLLLLLLLLLLLWW    
+17:WWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLLLWWWW  MM          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLLLWWLLLLLLLLLLLLLLLLLLLLLLWW    
+18:WWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLLLWWWW  MM          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLLLWWLLLLLLLLLLLLLLLLLLLLLLWW    
+|43,6|44,6|43,5|44,5|43,4|44,4|43,3|44,3|43,2|44,2|43,1|44,1|:(8, 0)
+|65,6|66,6|65,5|66,5|67,6|68,6|67,5|68,5|:(0, 6)
+|77,12|78,12|77,11|78,11|79,12|80,12|79,11|80,11|:(-6, 0)

@@ -17,23 +17,81 @@ LavaTile : L
 
 '''
 
+#_____________________ FUNCTIONS
+
+
+def write_file(filePath, save):
+    '''write_file(path, MapSave) -> None
+    write the string version of MapSave to a txt at path'''
+    #check if file pre exists (write or overwrite)
+    file = open(filePath, 'w')
+    #writei the string version of save to the file
+    file.write(str(save))
+    #close txt
+    file.close()
+
+
+def maptotextlist(platform,map_length):
+    """M2Tl(list,int) --> list 
+    maptotextlist turn the unorganized list of groups into list of collums of characters"""
+    
+    text_list = []
+    left_ori = []
+    right_ori = []
+    counter = 0 
+    
+    for x in range(map_length):
+        for y in range(9):
+            for sprite in platform[9*x+y].sprites():
+                if counter % 2 == 0:
+                    left_ori.append(sprite.char)
+                elif counter %2 != 0:
+                    right_ori.append(sprite.char)
+                
+                elif counter == 35:
+                    counter == 0
+                    
+                counter += 1 
+        text_list.append(left_ori)
+        text_list.append(right_ori)
+        
+        left_ori = []
+        right_ori = []
+                   
+    return text_list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #______________________ FOR SAVING
 
 filePath = False
 
-
 #______________________ FOR HOME
 
-#buttons
+#buttons(white)
 
-screen.fill(white)
+newButton = Button("new.png", (0, 0),33)
+openButton = Button("open.png", (1, 0),33)
 
-newButton = Button("new.png", (0, 0))
-openButton = Button("open.png", (1, 0))
-saveButton = Button("save.png", (2, 0))
 homeGroup = pygame.sprite.Group(newButton, openButton)
-editorGroup = pygame.sprite.Group(newButton, openButton, saveButton)
+editorGroup = pygame.sprite.Group(newButton, openButton)
 
 def end_task():
     '''set quit values to exit program'''
@@ -54,18 +112,19 @@ moving = MovingBlock()
 lock = 0
 
 #buttons group holds all the buttons at their respective location
-buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,0),50),
-                               Button("editor_01.bmp",(1,0),50),
-                               Button("editor_02.bmp",(0,1),50),
-                               Button("editor_03.bmp",(1,1),50),
-                               Button("editor_04.bmp",(0,2),50),
-                               Button("editor_05.bmp",(1,2),50),
-                               Button("editor_06.bmp",(0,3),50),
-                               Button("editor_07.bmp",(1,7),50),
-                               Button("editor_08.bmp",(0,7),50),
-                               Button("editor_09.bmp",(1,3),50),
-                               Button("save.png",(0,9),50),
-                               Button("new.png",(1,9),50)
+buttons = pygame.sprite.Group([Button("editor_00.bmp",(0,2)),
+                               Button("editor_01.bmp",(0,3)),
+                               Button("editor_02.bmp",(1,3)),
+                               Button("editor_03.bmp",(0,4)),
+                               Button("editor_04.bmp",(0,5)),
+                               Button("editor_05.bmp",(1,5)),
+                               Button("editor_06.bmp",(1,4)),
+                               Button("editor_07.bmp",(1,9)),
+                               Button("editor_08.bmp",(0,9)),
+                               Button("editor_09.bmp",(1,2,)),
+                               Button("save.png",(2,0),33),
+                               Button("new.png",(0,0),33),
+                               Button("open.png",(1,0),33)
                                ])
 left_click = 0
 right_click = 0
@@ -119,25 +178,26 @@ if __name__ == '__main__':
                                 if platform != None:
                                         
                                     map_length = platform[1]
-                                    print(type(platform[2]))
                                     save.movingTiles = (platform[2])
                                     platform = platform[0]
                                     screen.fill(black)
                                     state = 'editor'
+                                    
+                                save.is_saved = True
                                 
                 
-                
-                elif event.type == pygame.VIDEORESIZE:  #Window resizing event
-                    window = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                    screen = pygame.Surface(event.size).convert()
             
             
             #visual updates to the screen
-            
             homeGroup.update()
-            homeGroup.draw(screen)
             window.blit(screen, (0, 0))
+            window.blit(overlay,overlay_rect)
+            homeGroup.draw(window)
             pygame.display.flip()
+        
+        
+        
+        
         
        
         '''EDITOR'''
@@ -145,7 +205,35 @@ if __name__ == '__main__':
             for event in pygame.event.get(): 
             
                 if event.type == QUIT:
-                    end_task()
+                    if not save.is_saved:
+                        
+                        choice = buttonbox("Would You Like To Save?","World Editor",("Save","Don't Save","Cancel"))
+                        if choice == "Save":
+                            for block in save.movingTiles:
+                                if block.isEmpty():
+                                    save.movingTiles.remove(block)
+                            
+                            if save.path == None:
+                                filePath = filesavebox(filetypes=['\*.txt']) #ask for file path
+                                
+                            
+                            if filePath != None:
+                                                              
+                                map_list = maptotextlist(platform,map_length)
+                                                           
+                                for col in map_list:
+                                    for row in range(18):
+                                        save.add_block(row,col[row])
+                                
+                                
+                                write_file(filePath,save)         
+                                end_task()
+                        
+                        elif choice == "Don't Save":
+                            end_task()
+                        
+                    else:
+                        end_task()
                 
                 #if release mouse then leftclick and rightclick = False        
                 
@@ -163,7 +251,73 @@ if __name__ == '__main__':
                         
                         for button in pygame.sprite.spritecollide(user,buttons,0):
                             #if leftclick collides with any buttons it checks the tags to set appropriate colour
-                            if button.path == "editor_00.bmp" and not lock:
+                            if button.path == "open.png" and not lock:
+                                choice = False
+                                
+                                if not save.is_saved:
+                                    
+                                    choice = buttonbox("Would You Like To Save?","World Editor",("Save","Don't Save","Cancel"))
+                                    
+                                    if choice == "Save":
+                                            
+                                        for block in save.movingTiles:
+                                            if block.isEmpty():
+                                                save.movingTiles.remove(block)
+                                        
+                                        if save.path == None:
+                                            filePath = filesavebox(filetypes=['\*.txt']) #ask for file path
+                                            
+                                        
+                                        if filePath != None:
+                                                                          
+                                            map_list = maptotextlist(platform,map_length)
+                                                                       
+                                            for col in map_list:
+                                                for row in range(18):
+                                                    save.add_block(row,col[row])
+                                            
+                                            
+                                            write_file(filePath,save)
+                                            save.is_saved = True
+                                    
+                                if choice != "Cancel":
+                                    
+                                    filePath = fileopenbox(filetypes=['.txt'])
+                                    if filePath != '.':
+                                        save = MapSave(filePath) 
+                                        platform = read_file(filePath)
+                                        if platform != None:
+                                                
+                                            map_length = platform[1]
+                                            save.movingTiles = (platform[2])
+                                            platform = platform[0]
+                                            screen.fill(black)
+                                            state = 'editor'
+                                            
+                                        save.is_saved = True                                        
+                                    
+                                        
+                                
+                                            
+                                                 
+                                    
+                                
+                                if filePath != '.':
+                                    save = MapSave(filePath) 
+                                    platform = read_file(filePath)
+                                    if platform != None:
+                                            
+                                        map_length = platform[1]
+                                        save.movingTiles = (platform[2])
+                                        platform = platform[0]
+                                        screen.fill(black)
+                                        state = 'editor'
+                                        
+                                    save.is_saved = True                                
+                                
+                            
+                            
+                            elif button.path == "editor_00.bmp" and not lock:
                                 #white "Erase"
                                 user.col((255,255,255))
                                 user.set_char = " "
@@ -202,6 +356,7 @@ if __name__ == '__main__':
                                     
                                 
                             elif button.path == "editor_07.bmp"and not lock:
+                                save.is_saved = False
                                 #expand by two
                                 for y in range(2):
                                     for x in range(9):
@@ -222,10 +377,10 @@ if __name__ == '__main__':
                                 #decrease by two (map_length has to be maintaind to add on after )
                                 map_length -= 2
                                 platform = platform[:-18]
-                                
+                                save.is_saved = False
                                 
                             elif button.path == "editor_09.bmp" :
-                                buttons.add(Button("editor_10.bmp",(1,4),50))
+                                buttons.add(Button("editor_10.bmp",(1,1)))
                                 user.col((44,44,44))
                                 user.set_char = "M"
                                 lock = True
@@ -270,10 +425,8 @@ if __name__ == '__main__':
                                     
                                     
                                     write_file(filePath,save)
+                                    save.is_saved = True
                                     
-                                    end_task()
-                            
-                            
                             elif button.path == "new.png"and not lock:
                                 save = MapSave()  
                                 confirm = boolbox("Are you Sure:")
@@ -299,6 +452,7 @@ if __name__ == '__main__':
                     
                     
                     elif event.button == 4:
+                        
                         #scroll up to pan left 
                         
                         #if not at far left then you can pan left 
@@ -312,7 +466,7 @@ if __name__ == '__main__':
                     elif event.button == 5:
                         #scroll down
                         
-                        if scroll_count < (map_length*2):
+                        if scroll_count < (map_length//2 - 7):
                             #pan right while leaving room at end
                         
                             for group in platform:
@@ -329,11 +483,10 @@ if __name__ == '__main__':
                             
                             for sprite in group.sprites():
                                 if sprite.image.get_at((0,0)) != user.set_colour:
+                                    save.is_saved = False
+                                    
                                     sprite.fill(user.set_colour)
                                     sprite.char = user.set_char
-                                    
-                                    
-                                    
                                     
                                     #REMOVE or Overwrite a moving tile
                                     if user.set_colour != (44,44,44):
@@ -390,6 +543,7 @@ if __name__ == '__main__':
                         for sprite in pygame.sprite.spritecollide(user,group,0):
                             
                             if sprite.image.get_at((0,0)) != user.set_colour:
+                                save.is_saved = False
                                 
                                 
                                 sprite.fill(user.set_colour)           
